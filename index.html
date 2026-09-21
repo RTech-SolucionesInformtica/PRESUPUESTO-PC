@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>R-TECH SOLUCIONES - Presupuestos</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#eef2f4;--panel:#fff;--text:#16222a;--muted:#5d6f7a;--line:#d6dfe4;--accent:#0e7490;--accent-t:#fff;--field:#f7f9fa}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1418;--panel:#141e24;--text:#e6edf1;--muted:#8fa3ae;--line:#25343d;--accent:#22a6c7;--accent-t:#06232c;--field:#0f181d}}
+:root[data-theme="dark"]{--bg:#0d1418;--panel:#141e24;--text:#e6edf1;--muted:#8fa3ae;--line:#25343d;--accent:#22a6c7;--accent-t:#06232c;--field:#0f181d}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.45}
+.wrap{display:grid;gap:20px;padding:16px;max-width:1280px;margin:0 auto}
+@media(min-width:960px){.wrap{grid-template-columns:400px 1fr;align-items:start}.form{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow:auto}}
+.form{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+h1{font-size:18px;margin:0 0 14px;font-weight:600}
+h2{font-size:14px;margin:18px 0 8px;font-weight:600;color:var(--muted)}
+label{display:block;font-size:13px;color:var(--muted);margin:8px 0 3px}
+input,textarea{width:100%;font:inherit;color:var(--text);background:var(--field);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+input:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+textarea{resize:vertical;min-height:70px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row{display:grid;grid-template-columns:1fr 62px 100px 34px;gap:6px;margin-bottom:6px}
+.row .x{padding:0}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--field);color:var(--text);border-radius:6px;padding:8px 12px}
+button.main{background:var(--accent);color:var(--accent-t);border-color:var(--accent);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chips button{font-size:12.5px;padding:4px 9px;border-radius:99px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.logo-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.logo-row input{width:auto;flex:1;min-width:0}
+.msg{margin:8px 0 0;padding:8px 10px;border-radius:6px;border:1px solid var(--line);border-left:3px solid #d97706;background:var(--field);font-size:13px}
+.msg.ok{border-left-color:#0e9488}
+
+.hist{max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:6px}
+.hist-item{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:8px 10px;border-bottom:1px solid var(--line);font-size:12.5px}
+.hist-item:last-child{border-bottom:0}
+.hist-item .info{min-width:0;flex:1}
+.hist-item .info b{display:block;font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist-item .info span{display:block;color:var(--muted)}
+.hist-item .hbtns{display:flex;gap:4px;flex-shrink:0}
+.hist-item .hbtns button{padding:4px 7px;font-size:12px}
+.hist-empty{padding:14px 10px;color:var(--muted);font-size:12.5px}
+.file-btn{position:relative;overflow:hidden;display:inline-block;font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--field);color:var(--text);border-radius:6px;padding:8px 12px}
+.file-btn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+
+/* Hoja del presupuesto: siempre blanca, como el papel */
+.sheet{background:#fff;color:#141c22;max-width:794px;width:100%;margin:0 auto;padding:36px 40px;border:1px solid var(--line);border-radius:6px;font-size:13.5px;overflow-x:auto}
+.head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;padding-bottom:18px;border-bottom:2px solid #0e7490}
+.brand{display:flex;gap:14px;align-items:center}
+.brand img{max-height:72px;max-width:150px;object-fit:contain}
+.brand b{font-size:19px;display:block}
+.brand span{display:block;color:#51636e;font-size:12.5px}
+.meta{text-align:right;white-space:nowrap}
+.meta .t{font-size:20px;font-weight:600;color:#0e7490}
+.client{margin:18px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.client small{display:block;color:#51636e;font-size:11.5px}
+table{width:100%;border-collapse:collapse;min-width:480px}
+th{text-align:left;font-weight:600;font-size:12px;color:#51636e;border-bottom:1px solid #c9d4da;padding:6px 4px}
+td{padding:8px 4px;border-bottom:1px solid #e6ecef;vertical-align:top}
+.n{text-align:right;white-space:nowrap}
+.tot{margin:14px 0 0 auto;width:290px}
+.tot div{display:flex;justify-content:space-between;padding:3px 0}
+.tot .g{border-top:2px solid #141c22;margin-top:6px;padding-top:8px;font-size:17px;font-weight:600}
+.notes{margin-top:24px;color:#3b4b55;white-space:pre-line;font-size:12.5px}
+.empty{color:#8a9aa4;padding:14px 4px}
+
+@page{margin:12mm}
+@media print{
+ :root{padding:0}
+ body{background:#fff}
+ .wrap{display:block;padding:0}
+ .form{display:none!important}
+ .sheet{border:0;padding:0;max-width:none;overflow:visible}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <section class="form" aria-label="Datos del presupuesto">
+  <h1>Nuevo presupuesto</h1>
+
+  <h2>Tu negocio</h2>
+  <label>Logo</label>
+  <div class="logo-row">
+   <input type="file" id="logo" accept="image/*">
+   <button type="button" id="nologo">Quitar</button>
+  </div>
+  <p id="msg" class="msg" role="status" hidden></p>
+  <label for="bn">Nombre</label><input id="bn" data-k="biz.name">
+  <div class="two">
+   <div><label for="bp">WhatsApp / teléfono</label><input id="bp" data-k="biz.phone" inputmode="tel"></div>
+   <div><label for="be">Email</label><input id="be" data-k="biz.email" type="email"></div>
+  </div>
+  <label for="ba">Dirección o zona</label><input id="ba" data-k="biz.addr">
+  <div class="two">
+   <div><label for="tn">Técnico</label><input id="tn" data-k="biz.tech" placeholder="Nombre del técnico"></div>
+   <div><label for="tm">Matrícula</label><input id="tm" data-k="biz.matricula"></div>
+  </div>
+
+  <h2>Cliente</h2>
+  <label for="cn">Nombre</label><input id="cn" data-k="client.name">
+  <div class="two">
+   <div><label for="cp">Teléfono</label><input id="cp" data-k="client.phone" inputmode="tel"></div>
+   <div><label for="ce">Equipo</label><input id="ce" data-k="client.equip" placeholder="Ej: notebook Lenovo"></div>
+  </div>
+
+  <h2>Datos del presupuesto</h2>
+  <div class="two">
+   <div><label for="nu">Número</label><input id="nu" data-k="num" type="number" min="1"></div>
+   <div><label for="fd">Fecha</label><input id="fd" data-k="date" type="date"></div>
+  </div>
+  <div class="two">
+   <div><label for="va">Válido por (días)</label><input id="va" data-k="valid" type="number" min="0"></div>
+   <div><label for="di">Descuento (%)</label><input id="di" data-k="disc" type="number" min="0" max="100" step="any"></div>
+  </div>
+  <label style="display:flex;align-items:center;gap:8px;margin-top:10px;cursor:pointer">
+   <input type="checkbox" id="cardp" style="width:auto">
+   Pago con tarjeta de crédito/débito (agrega IVA 21%)
+  </label>
+
+  <h2>Trabajos y repuestos</h2>
+  <div class="chips" id="chips"></div>
+  <div id="items"></div>
+  <button type="button" id="add">Agregar ítem</button>
+
+  <h2>Condiciones</h2>
+  <textarea id="no" data-k="notes"></textarea>
+
+  <div class="actions">
+   <button type="button" class="main" id="print">Imprimir o guardar PDF</button>
+   <button type="button" id="wsp">Enviar por WhatsApp</button>
+   <button type="button" id="save-hist">Guardar en historial</button>
+   <button type="button" id="new">Nuevo presupuesto</button>
+  </div>
+
+  <h2>Historial de presupuestos</h2>
+  <div class="hist" id="hist"></div>
+
+  <h2>Backup (llevar entre PCs)</h2>
+  <p style="font-size:12.5px;color:var(--muted);margin:0 0 8px">Los datos quedan guardados en el navegador de cada PC. Para llevarlos a otra, exportá un backup y luego importalo ahí.</p>
+  <div class="actions" style="margin-top:0">
+   <button type="button" id="export">Exportar backup</button>
+   <label class="file-btn">Importar backup<input type="file" id="import" accept="application/json,.json"></label>
+  </div>
+ </section>
+
+ <main class="sheet" id="sheet" aria-label="Vista previa del presupuesto"></main>
+</div>
+
+<script>
+const KEY = 'presupuesto-pc-v1';
+const HIST_KEY = 'presupuesto-pc-historial';
+const PRECIOS_KEY = 'presupuesto-pc-precios';
+const PRESETS = ['Diagnóstico', 'Limpieza y mantenimiento preventivo', 'Cambio de pasta térmica', 'Formateo e instalación de Windows', 'Instalación de SSD', 'Instalación de programas'];
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => new Intl.NumberFormat('es-AR', {style:'currency', currency:'ARS'}).format(n);
+const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); };
+const shortDate = s => s ? s.split('-').reverse().join('/') : '';
+const IVA_RATE = 21;
+// `id` identifica este presupuesto de forma única, independiente de num/fecha/cliente
+// (que pueden repetirse). Es lo que usa #save-hist para saber si actualiza o crea una entrada.
+const blank = () => ({
+  id: uid(),
+  num: 1, date: today(), valid: 7, disc: 0, cardPayment: false,
+  client: {name:'', phone:'', equip:''},
+  items: [{d:'', q:1, p:''}],
+  notes: 'Los precios están expresados en pesos argentinos. Si durante el trabajo se detectan fallas adicionales, se consultará antes de continuar.'
+});
+
+const VERSION = 3;
+const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
+
+// Punto 1: lee un input numérico respetando su min/max y devuelve el valor corregido al campo.
+// Caso vacío: el estado interno pasa a valer 0 (o el mínimo), pero DELIBERADAMENTE no se
+// reescribe el input a "0" — si lo hiciéramos, borrar el campo para tipear un número nuevo
+// (ej. cambiar "50" por "75") mostraría "0" en el medio y sería molesto para escribir.
+function readNum(el) {
+  if (el.value === '') return clamp(0, el.min === '' ? -Infinity : Number(el.min), el.max === '' ? Infinity : Number(el.max));
+  const lo = el.min === '' ? -Infinity : Number(el.min);
+  const hi = el.max === '' ? Infinity : Number(el.max);
+  const n = Number(el.value);
+  const raw = Number.isFinite(n) ? n : 0;
+  const v = clamp(raw, lo, hi);
+  if (v !== raw) el.value = v;
+  return v;
+}
+
+// Punto 3: la carga siempre devuelve un estado válido, aunque lo guardado sea viejo o esté roto.
+function normalize(raw, base) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return base;
+  const v = Number(raw.v) || 1;
+  // Migraciones por versión
+  if (v < 2 && raw.biz && raw.biz.name === 'RTech Soluciones Informática') raw.biz.name = base.biz.name;
+
+  const str = (x, def) => typeof x === 'string' ? x : def;
+  const nb = (x, def, lo, hi) => Number.isFinite(x) ? clamp(x, lo, hi) : def;
+  const obj = x => x && typeof x === 'object' && !Array.isArray(x) ? x : {};
+  const b = obj(raw.biz), c = obj(raw.client);
+  const items = (Array.isArray(raw.items) ? raw.items : []).filter(it => it && typeof it === 'object').map(it => ({
+    d: str(it.d, ''),
+    q: nb(it.q, 1, 0, Infinity),
+    p: Number.isFinite(it.p) ? clamp(it.p, 0, Infinity) : ''
+  }));
+  return {
+    // Id propio por registro: si falta (datos viejos, sin id) se genera uno nuevo acá mismo,
+    // NO se reutiliza base.id, porque normalize() se llama una vez por cada entrada del historial
+    // al importar un backup y todas compartirían el mismo id si lo tomáramos de base.
+    id: str(raw.id, '') || uid(),
+    biz: {name: str(b.name, base.biz.name), phone: str(b.phone, ''), email: str(b.email, ''), addr: str(b.addr, ''), tech: str(b.tech, ''), matricula: str(b.matricula, '')},
+    logo: typeof raw.logo === 'string' && raw.logo.startsWith('data:image/') ? raw.logo : '',
+    num: nb(raw.num, base.num, 1, Infinity),
+    date: /^\d{4}-\d{2}-\d{2}$/.test(raw.date) ? raw.date : base.date,
+    valid: nb(raw.valid, base.valid, 0, Infinity),
+    disc: nb(raw.disc, 0, 0, 100),
+    cardPayment: raw.cardPayment === true,
+    client: {name: str(c.name, ''), phone: str(c.phone, ''), equip: str(c.equip, '')},
+    items: items.length ? items : base.items,
+    notes: str(raw.notes, base.notes)
+  };
+}
+
+function load() {
+  const base = {biz: {name:'R-TECH SOLUCIONES', phone:'', email:'', addr:'', tech:'', matricula:''}, logo:'', ...blank()};
+  try {
+    return normalize(JSON.parse(localStorage.getItem(KEY)), base);
+  } catch (e) {
+    return base;
+  }
+}
+
+let S = load();
+
+// Historial: lista de presupuestos guardados (independiente del formulario actual)
+function loadHist() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(HIST_KEY));
+    return Array.isArray(raw) ? raw.filter(x => x && typeof x === 'object' && x.id && x.snapshot) : [];
+  } catch (e) { return []; }
+}
+let HIST = loadHist();
+const saveHist = () => { try { localStorage.setItem(HIST_KEY, JSON.stringify(HIST)); } catch (e) { notify('No se pudo guardar el historial: no hay espacio en el navegador.'); } };
+
+// Precios aprendidos: recuerda el último precio usado para cada ítem preestablecido
+function loadPrecios() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(PRECIOS_KEY));
+    return raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {};
+  } catch (e) { return {}; }
+}
+let PRECIOS = loadPrecios();
+// Falla en silencio a propósito: si no se puede guardar, la app sigue funcionando igual,
+// simplemente no va a sugerir precios recordados la próxima vez. No amerita interrumpir al usuario.
+const savePrecios = () => { try { localStorage.setItem(PRECIOS_KEY, JSON.stringify(PRECIOS)); } catch (e) {} };
+function learnPrice(it) {
+  if (PRESETS.includes(it.d) && it.p !== '' && Number(it.p) > 0) {
+    PRECIOS[it.d] = it.p;
+    savePrecios();
+  }
+}
+function uid() {
+  try { return crypto.randomUUID(); } catch (e) { return 'h' + Date.now() + Math.random().toString(36).slice(2); }
+}
+
+// Punto 2: los errores se muestran, no se tragan.
+let saveFailed = false, msgTimer;
+function notify(text, ok) {
+  const el = $('#msg');
+  el.textContent = text;
+  el.hidden = !text;
+  el.classList.toggle('ok', !!ok);
+  clearTimeout(msgTimer);
+  if (text) msgTimer = setTimeout(() => { el.hidden = true; }, 8000);
+}
+const save = () => {
+  try {
+    localStorage.setItem(KEY, JSON.stringify({v: VERSION, ...S}));
+    saveFailed = false;
+  } catch (e) {
+    if (saveFailed) return; // avisar una sola vez, no en cada tecla
+    saveFailed = true;
+    notify(e && e.name === 'QuotaExceededError'
+      ? 'No se pudo guardar: no hay espacio en el navegador. Probá con un logo más liviano.'
+      : 'No se pudo guardar en este navegador. Los datos se pierden al cerrar la página.');
+  }
+};
+
+// render() se dispara en cada tecla; guardar en localStorage en cada una es innecesario.
+// Se agrupan los guardados y se garantiza el último con el flush al cerrar/cambiar de pestaña.
+let saveTimer;
+function scheduleSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(save, 400);
+}
+window.addEventListener('beforeunload', () => { clearTimeout(saveTimer); save(); });
+window.addEventListener('pagehide', () => { clearTimeout(saveTimer); save(); });
+
+const getPath = (o, p) => p.split('.').reduce((a, k) => a[k], o);
+const setPath = (o, p, v) => { const k = p.split('.'), l = k.pop(); k.forEach(x => o = o[x]); o[l] = v; };
+
+function fillFields() {
+  document.querySelectorAll('[data-k]').forEach(el => { el.value = getPath(S, el.dataset.k); });
+  $('#cardp').checked = !!S.cardPayment;
+}
+document.querySelectorAll('[data-k]').forEach(el => {
+  el.addEventListener('input', () => {
+    setPath(S, el.dataset.k, el.type === 'number' ? readNum(el) : el.value);
+    render();
+  });
+});
+
+function rows() {
+  const box = $('#items');
+  box.innerHTML = '';
+  S.items.forEach((it, i) => {
+    const r = document.createElement('div');
+    r.className = 'row';
+    r.innerHTML = '<input placeholder="Descripción" aria-label="Descripción"><input type="number" min="0" step="1" aria-label="Cantidad"><input type="number" min="0" step="any" placeholder="Precio" aria-label="Precio unitario"><button type="button" class="x" aria-label="Quitar ítem">✕</button>';
+    const [inputDesc, inputQty, inputPrice, btnRemove] = r.children;
+    inputDesc.value = it.d; inputQty.value = it.q; inputPrice.value = it.p;
+    inputDesc.oninput = () => { it.d = inputDesc.value; learnPrice(it); render(); };
+    inputQty.oninput = () => { it.q = readNum(inputQty); render(); };
+    inputPrice.oninput = () => { it.p = inputPrice.value === '' ? '' : readNum(inputPrice); learnPrice(it); render(); };
+    btnRemove.onclick = () => { S.items.splice(i, 1); if (!S.items.length) S.items.push({d:'', q:1, p:''}); rows(); render(); };
+    box.appendChild(r);
+  });
+}
+
+// Fórmula única de totales: la usan render(), el envío por WhatsApp y el historial,
+// así evitamos que se desincronicen si el día de mañana cambia el % de IVA o el descuento.
+function calcTotals(items, discPct, cardPayment) {
+  const lines = items.filter(it => it.d.trim() || it.p !== '');
+  const sub = lines.reduce((a, it) => a + it.q * (Number(it.p) || 0), 0);
+  const disc = sub * (discPct || 0) / 100;
+  const iva = cardPayment ? (sub - disc) * IVA_RATE / 100 : 0;
+  const total = sub - disc + iva;
+  return { lines, sub, disc, iva, total };
+}
+
+function render() {
+  const { lines, sub, disc, iva, total } = calcTotals(S.items, S.disc, S.cardPayment);
+  const biz = S.biz, client = S.client;
+  const contact = [biz.phone, biz.email, biz.addr].filter(Boolean).map(esc);
+
+  $('#sheet').innerHTML =
+    '<div class="head"><div class="brand">' +
+      (S.logo ? '<img src="' + esc(S.logo) + '" alt="Logo">' : '') +
+      '<div><b>' + esc(biz.name) + '</b>' + contact.map(x => '<span>' + x + '</span>').join('') + '</div></div>' +
+      '<div class="meta"><div class="t">Presupuesto</div>N° ' + String(S.num).padStart(4, '0') +
+      '<br>' + shortDate(S.date) + (S.valid ? '<br>Válido por ' + S.valid + ' días' : '') + '</div></div>' +
+    '<div class="client"><div><small>Cliente</small>' + (esc(client.name) || '—') + '</div><div><small>Teléfono</small>' + (esc(client.phone) || '—') + '</div><div><small>Equipo</small>' + (esc(client.equip) || '—') + '</div></div>' +
+    '<table><thead><tr><th>Descripción</th><th class="n">Cant.</th><th class="n">Precio unit.</th><th class="n">Subtotal</th></tr></thead><tbody>' +
+      (lines.length ? lines.map(it => '<tr><td>' + esc(it.d) + '</td><td class="n">' + it.q + '</td><td class="n">' + (it.p === '' ? '—' : money(it.p)) + '</td><td class="n">' + money(it.q * (Number(it.p) || 0)) + '</td></tr>').join('')
+        : '<tr><td colspan="4" class="empty">Agregá trabajos o repuestos para ver el detalle.</td></tr>') +
+    '</tbody></table>' +
+    '<div class="tot"><div><span>Subtotal</span><span>' + money(sub) + '</span></div>' +
+      (S.disc > 0 ? '<div><span>Descuento (' + S.disc + '%)</span><span>−' + money(disc) + '</span></div>' : '') +
+      (S.cardPayment ? '<div><span>IVA pago con tarjeta (' + IVA_RATE + '%)</span><span>+' + money(iva) + '</span></div>' : '') +
+      '<div class="g"><span>Total</span><span>' + money(total) + '</span></div></div>' +
+    (S.notes.trim() ? '<div class="notes">' + esc(S.notes) + '</div>' : '') +
+    ((biz.tech || biz.matricula) ? '<div class="notes">' + [biz.tech ? 'Técnico: ' + esc(biz.tech) : '', biz.matricula ? 'Matrícula: ' + esc(biz.matricula) : ''].filter(Boolean).join(' — ') + '</div>' : '');
+  scheduleSave();
+}
+
+function histTotal(snap) {
+  return calcTotals(snap.items, snap.disc, snap.cardPayment).total;
+}
+
+function renderHist() {
+  const box = $('#hist');
+  if (!HIST.length) { box.innerHTML = '<div class="hist-empty">Todavía no guardaste ningún presupuesto en el historial.</div>'; return; }
+  const ordered = [...HIST].sort((a, b) => b.savedAt - a.savedAt);
+  box.innerHTML = ordered.map(h => {
+    const nombre = h.snapshot.client.name.trim() || 'Sin nombre de cliente';
+    return '<div class="hist-item" data-id="' + esc(h.id) + '">' +
+      '<div class="info"><b>N° ' + String(h.snapshot.num).padStart(4, '0') + ' — ' + esc(nombre) + '</b>' +
+      '<span>' + shortDate(h.snapshot.date) + ' · ' + money(histTotal(h.snapshot)) + '</span></div>' +
+      '<div class="hbtns">' +
+      '<button type="button" data-act="open">Abrir</button>' +
+      '<button type="button" data-act="dup">Duplicar</button>' +
+      '<button type="button" data-act="del">✕</button>' +
+      '</div></div>';
+  }).join('');
+}
+
+$('#hist').onclick = e => {
+  const btn = e.target.closest('button[data-act]');
+  if (!btn) return;
+  const id = btn.closest('.hist-item').dataset.id;
+  const h = HIST.find(x => x.id === id);
+  if (!h) return;
+  if (btn.dataset.act === 'open') {
+    S = JSON.parse(JSON.stringify(h.snapshot));
+    fillFields(); rows(); render();
+  } else if (btn.dataset.act === 'dup') {
+    const maxNum = HIST.reduce((m, x) => Math.max(m, x.snapshot.num || 0), S.num || 0);
+    // Id nuevo: es un presupuesto distinto del original, si no compartiría el mismo id
+    // y "Guardar en historial" terminaría sobrescribiendo la entrada de la que se duplicó.
+    S = {...JSON.parse(JSON.stringify(h.snapshot)), id: uid(), num: maxNum + 1, date: today()};
+    fillFields(); rows(); render();
+    notify('Presupuesto duplicado como N° ' + String(S.num).padStart(4, '0') + '.', true);
+  } else if (btn.dataset.act === 'del') {
+    if (!confirm('¿Eliminar este presupuesto del historial? Esta acción no se puede deshacer.')) return;
+    HIST = HIST.filter(x => x.id !== id);
+    saveHist(); renderHist();
+  }
+};
+
+$('#save-hist').onclick = () => {
+  // Se matchea por S.id (el id del presupuesto en curso, no el de la entrada del historial):
+  // dos presupuestos distintos pueden compartir número, fecha y cliente sin ser el mismo.
+  const existing = HIST.find(h => h.snapshot.id === S.id);
+  const entry = {id: existing ? existing.id : uid(), savedAt: Date.now(), snapshot: JSON.parse(JSON.stringify(S))};
+  if (existing) HIST = HIST.map(h => h.id === entry.id ? entry : h); else HIST.push(entry);
+  saveHist(); renderHist();
+  notify('Presupuesto guardado en el historial.', true);
+};
+
+$('#wsp').onclick = () => {
+  const { lines, sub, disc, iva, total } = calcTotals(S.items, S.disc, S.cardPayment);
+  const partes = [];
+  partes.push('*Presupuesto N° ' + String(S.num).padStart(4, '0') + '*');
+  partes.push(S.biz.name);
+  if (S.client.name.trim()) partes.push('Cliente: ' + S.client.name.trim());
+  if (S.client.equip.trim()) partes.push('Equipo: ' + S.client.equip.trim());
+  partes.push('');
+  if (lines.length) {
+    lines.forEach(it => partes.push('• ' + it.d + ' (x' + it.q + ')' + (it.p !== '' ? ' — ' + money(it.q * Number(it.p)) : '')));
+  } else {
+    partes.push('(Sin ítems cargados)');
+  }
+  partes.push('');
+  if (S.disc > 0) partes.push('Descuento: ' + S.disc + '%');
+  if (S.cardPayment) partes.push('IVA pago con tarjeta: ' + money(iva));
+  partes.push('*Total: ' + money(total) + '*');
+  if (S.valid) partes.push('Válido por ' + S.valid + ' días.');
+  const texto = encodeURIComponent(partes.join('\n'));
+  const tel = (S.client.phone || '').replace(/[^\d]/g, '');
+  const url = 'https://wa.me/' + (tel ? tel : '') + '?text=' + texto;
+  window.open(url, '_blank');
+};
+
+$('#export').onclick = () => {
+  const backup = {v: VERSION, exportedAt: new Date().toISOString(), biz: S.biz, logo: S.logo, num: S.num, historial: HIST, precios: PRECIOS};
+  const blob = new Blob([JSON.stringify(backup, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'rtech-backup-' + today() + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+};
+
+$('#import').onchange = e => {
+  const f = e.target.files[0];
+  e.target.value = '';
+  if (!f) return;
+  const fr = new FileReader();
+  fr.onerror = () => notify('No se pudo leer el archivo de backup.');
+  fr.onload = () => {
+    let data;
+    try { data = JSON.parse(fr.result); } catch (err) { notify('El archivo no es un backup válido (JSON inválido).'); return; }
+    if (!data || typeof data !== 'object') { notify('El archivo no es un backup válido.'); return; }
+    const nombreNegocio = (data.biz && data.biz.name) || '(sin nombre)';
+    const cantHist = Array.isArray(data.historial) ? data.historial.length : 0;
+    if (!confirm('Importar backup de "' + nombreNegocio + '" con ' + cantHist + ' presupuesto(s) en el historial.\n\nSe van a actualizar los datos del negocio, el logo y se van a sumar los presupuestos del historial que todavía no tengas. ¿Continuar?')) return;
+    if (data.biz && typeof data.biz === 'object') {
+      const b = data.biz;
+      S.biz = {
+        name: typeof b.name === 'string' ? b.name : S.biz.name,
+        phone: typeof b.phone === 'string' ? b.phone : S.biz.phone,
+        email: typeof b.email === 'string' ? b.email : S.biz.email,
+        addr: typeof b.addr === 'string' ? b.addr : S.biz.addr,
+        tech: typeof b.tech === 'string' ? b.tech : S.biz.tech,
+        matricula: typeof b.matricula === 'string' ? b.matricula : S.biz.matricula
+      };
+    }
+    if (typeof data.logo === 'string' && data.logo.startsWith('data:image/')) S.logo = data.logo;
+    if (Number.isFinite(Number(data.num))) S.num = Math.max(S.num, Number(data.num));
+    if (Array.isArray(data.historial)) {
+      const idsActuales = new Set(HIST.map(h => h.id));
+      const baseNorm = {biz: S.biz, ...blank()};
+      data.historial.forEach(h => {
+        if (h && typeof h.id === 'string' && h.snapshot && !idsActuales.has(h.id)) {
+          HIST.push({id: h.id, savedAt: Number.isFinite(h.savedAt) ? h.savedAt : Date.now(), snapshot: normalize(h.snapshot, baseNorm)});
+        }
+      });
+      saveHist();
+    }
+    if (data.precios && typeof data.precios === 'object') { PRECIOS = {...PRECIOS, ...data.precios}; savePrecios(); }
+    fillFields(); rows(); render(); renderHist();
+    notify('Backup importado correctamente.', true);
+  };
+  fr.readAsText(f);
+};
+
+$('#chips').innerHTML = PRESETS.map((p, i) => '<button type="button" data-i="' + i + '">+ ' + p + '</button>').join('');
+$('#chips').onclick = e => {
+  const i = e.target.dataset.i;
+  if (i === undefined) return;
+  const desc = PRESETS[i];
+  const sugerido = PRECIOS[desc] !== undefined ? PRECIOS[desc] : '';
+  const empty = S.items.findIndex(it => !it.d.trim() && it.p === '');
+  if (empty >= 0) {
+    S.items[empty].d = desc;
+    if (S.items[empty].p === '') S.items[empty].p = sugerido;
+  } else {
+    S.items.push({d: desc, q: 1, p: sugerido});
+  }
+  rows(); render();
+};
+$('#add').onclick = () => { S.items.push({d:'', q:1, p:''}); rows(); };
+$('#cardp').onchange = e => { S.cardPayment = e.target.checked; render(); };
+
+$('#logo').onchange = e => {
+  const f = e.target.files[0];
+  e.target.value = '';
+  if (!f) return;
+  if (!f.type.startsWith('image/')) { notify('El archivo elegido no es una imagen. Usá PNG, JPG o SVG.'); return; }
+  const fr = new FileReader();
+  fr.onerror = () => notify('No se pudo leer el archivo.');
+  fr.onload = () => {
+    const im = new Image();
+    im.onerror = () => notify('No se pudo abrir la imagen. Probá con otro archivo.');
+    im.onload = () => {
+      if (!im.width || !im.height) { notify('No se pudo determinar el tamaño de la imagen.'); return; }
+      const MAX_SIDE = 420, MAX_CHARS = 600000;
+      const s = Math.min(1, MAX_SIDE / Math.max(im.width, im.height));
+      const cv = document.createElement('canvas');
+      cv.width = Math.round(im.width * s); cv.height = Math.round(im.height * s);
+      const ctx = cv.getContext('2d');
+      ctx.drawImage(im, 0, 0, cv.width, cv.height);
+      let out = cv.toDataURL('image/png');
+      if (out.length > MAX_CHARS) { // fotos: JPEG con fondo blanco pesa mucho menos
+        ctx.globalCompositeOperation = 'destination-over';
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, cv.width, cv.height);
+        out = cv.toDataURL('image/jpeg', 0.85);
+      }
+      if (out.length > MAX_CHARS) { notify('El logo es demasiado pesado. Probá con una imagen más simple.'); return; }
+      S.logo = out;
+      notify('');
+      render();
+    };
+    im.src = fr.result;
+  };
+  fr.readAsDataURL(f);
+};
+$('#nologo').onclick = () => { S.logo = ''; render(); };
+
+$('#new').onclick = () => {
+  S = {...blank(), biz: S.biz, logo: S.logo, notes: S.notes, num: S.num + 1};
+  fillFields(); rows(); render();
+};
+$('#print').onclick = () => {
+  const sinCliente = !S.client.name.trim();
+  const sinItems = !S.items.some(it => it.d.trim() || it.p !== '');
+  if (sinCliente || sinItems) {
+    const faltan = [sinCliente && 'el nombre del cliente', sinItems && 'los ítems del trabajo'].filter(Boolean).join(' y ');
+    if (!confirm('Falta cargar ' + faltan + '. ¿Igual querés imprimir o guardar el PDF?')) return;
+  }
+  // Falla en silencio a propósito: si print() no está disponible en algún navegador viejo,
+  // preferimos no romper la app con un error visible por algo que el usuario no puede solucionar.
+  try { window.print(); } catch (e) {}
+};
+
+fillFields(); rows(); render(); renderHist();
+</script>
+</body>
+</html>
